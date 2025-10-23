@@ -1,14 +1,14 @@
-from tensorflow.keras.applications import MobileNetV2
-from tensorflow.keras.applications.mobilenet_v2 import preprocess_input, decode_predictions
+from tensorflow.keras.applications import EfficientNetV2B0
+from tensorflow.keras.applications.efficientnet_v2 import preprocess_input, decode_predictions
 from tensorflow.keras.preprocessing.image import load_img, img_to_array
 import numpy as np
 
-# Load pretrained MobileNetV2 model
-model = MobileNetV2(weights='imagenet', input_size=(32,32))
+# Load pretrained EfficientNetV2B0 model
+model = EfficientNetV2B0(weights='imagenet')  # No need to specify input_shape
 
-# Load and preprocess the image
-image_path = 'test_4.jpg'
-image = load_img(image_path, target_size=(224, 224))
+# Load and preprocess the image in RGB mode
+image_path = 'test2.jpg'
+image = load_img(image_path, target_size=(224, 224), color_mode='rgb')  # Ensure RGB
 image_array = img_to_array(image)
 image_array = np.expand_dims(image_array, axis=0)
 image_array = preprocess_input(image_array)
