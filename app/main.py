@@ -15,6 +15,6 @@ def classify_image(image_path):
     preds = model.predict(x)
     return preds
 
-image_path='catdog.jpg'
+image_path='images/train/real/2irnom9vxi5a1.png'
 preds = classify_image(image_path)
 print("Predicted: ", tf.keras.applications.efficientnet_v2.decode_predictions(preds, top=3)[0])
