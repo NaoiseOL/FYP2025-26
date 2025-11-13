@@ -4,6 +4,8 @@ from tensorflow.keras.applications.efficientnet_v2 import preprocess_input
 from tensorflow.keras.preprocessing import image
 import numpy as np
 
+#Edit to use new saved model
+
 model = EfficientNetV2B0(weights='imagenet')
 
 def classify_image(image_path):

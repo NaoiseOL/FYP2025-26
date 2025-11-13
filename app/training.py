@@ -4,6 +4,7 @@ import keras
 import os
 from keras import layers
 from keras.applications import EfficientNetV2B0
+import json
 
 IMG_SIZE = 224
 BATCH_SIZE = 64
@@ -46,7 +47,7 @@ history = model.fit(
     epochs=10
 )
 
-model.fit(ds_train, validation_data=ds_test, epochs=10)
-
-os.makedirs("model/pixeProbB0.keras", exist_ok=True)
-model.save("model/pixeProbB0.keras")
+os.makedirs("model", exist_ok=True)
+model.save("model/pixelProbeB0.keras")
+with open("model/history.json", "w") as f:
+    json.dump(history.history, f)
