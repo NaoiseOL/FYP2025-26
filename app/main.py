@@ -1,22 +1,24 @@
 import tensorflow as tf
-from tensorflow.keras.applications import EfficientNetV2B0
-from tensorflow.keras.applications.efficientnet_v2 import preprocess_input
 from tensorflow.keras.preprocessing import image
 import numpy as np
 
-#Edit to use new saved model
+# Load your custom model
+model = tf.keras.models.load_model("model/pixelProbeB0.keras")
 
-model = EfficientNetV2B0(weights='imagenet')
+
+class_labels = ["real", "fake"]
 
 def classify_image(image_path):
     img = image.load_img(image_path, target_size=(224, 224))
     x = image.img_to_array(img)
     x = np.expand_dims(x, axis=0)
-    x = preprocess_input(x)
+    x = tf.keras.applications.efficientnet_v2.preprocess_input(x)
 
     preds = model.predict(x)
-    return preds
+    predicted_class = class_labels[np.argmax(preds)]
+    confidence = np.max(preds)
+    return predicted_class, confidence
 
-image_path='images/train/real/2irnom9vxi5a1.png'
-preds = classify_image(image_path)
-print("Predicted: ", tf.keras.applications.efficientnet_v2.decode_predictions(preds, top=3)[0])
+image_path = 'images/train/real/2irnom9vxi5a1.png'
+pred_class, conf = classify_image(image_path)
+print(f"Predicted: {pred_class} (confidence: {conf:.2f})")
