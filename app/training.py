@@ -3,7 +3,7 @@ import tensorflow as tf
 import keras
 import os
 from keras import layers
-from keras.applications import EfficientNetV2B0
+from keras.applications import EfficientNetV2B1
 import json
 
 IMG_SIZE = 224
@@ -30,7 +30,7 @@ ds_test = tf.keras.utils.image_dataset_from_directory(
 class_names = ds_train.class_names
 NUM_CLASSES = len(class_names)
 
-base_model= EfficientNetV2B0(include_top=False, weights='imagenet', input_shape=(IMG_SIZE, IMG_SIZE, 3))
+base_model= EfficientNetV2B1(include_top=False, weights='imagenet', input_shape=(IMG_SIZE, IMG_SIZE, 3))
 base_model.trainable = False
 
 model = tf.keras.Sequential([
@@ -48,6 +48,6 @@ history = model.fit(
 )
 
 os.makedirs("model", exist_ok=True)
-model.save("model/pixelProbeB0.keras")
-with open("model/history.json", "w") as f:
+model.save("model/pixelProbeB1.keras")
+with open("model/historyB1.json", "w") as f:
     json.dump(history.history, f)
