@@ -5,7 +5,7 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 import os
 import json
 
-model_path = "model/pixelProbeB0.keras"
+model_path = "model/pixelProbeB1_V2.keras"
 model = tf.keras.models.load_model(model_path)
 
 IMG_SIZE = 224
@@ -20,7 +20,7 @@ ds_test = tf.keras.utils.image_dataset_from_directory(
     label_mode="int"
 )
 
-history_path = "model/history.json"
+history_path = "model/historyB1_V2.json"
 if os.path.exists(history_path):
     with open(history_path, "r") as f:
         history_data = json.load(f)
@@ -48,7 +48,6 @@ if os.path.exists(history_path):
 else:
     print("Training history file not found. Skipping training plots.")
 
-# Generate predictions and true labels
 y_true = []
 y_pred = []
 
@@ -57,7 +56,6 @@ for images, labels in ds_test.unbatch():
     y_true.append(labels.numpy())
     y_pred.append(np.argmax(preds))
 
-# Compute and display confusion matrix
 class_names = ds_test.class_names
 cm = confusion_matrix(y_true, y_pred)
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=class_names)

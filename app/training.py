@@ -49,11 +49,7 @@ model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=
 
 unfreeze_model(model)
 
-history = model.fit(
-    ds_train,
-    validation_data = ds_test,
-    epochs=10
-)
+history = model.fit(ds_train, validation_data=ds_test, epochs=10, class_weight={0:1.0, 1:5.0})
 
 os.makedirs("model", exist_ok=True)
 model.save("model/pixelProbeB1_V2.keras")
