@@ -8,7 +8,7 @@ from flask_cors import CORS
 app = Flask(__name__)
 CORS(app)
 
-model = tf.keras.models.load_model("model/pixelProbeB1_V2.keras")
+model = tf.keras.models.load_model("model/pixelProbeB1_V3.keras")
 class_labels = ["real", "fake"]
 
 def classify_image(image_path):
@@ -17,6 +17,12 @@ def classify_image(image_path):
     x = np.expand_dims(x, axis=0)
     x = x / 255.0
     preds = model.predict(x)
+
+    print(f"Raw predictions: {preds}")
+    print(f"Prediction shape: {preds.shape}")
+    print(f"Max value: {np.max(preds[0])}")
+    print(f"Argmax: {np.argmax(preds[0])}")
+
     predicted_class = class_labels[np.argmax(preds[0])]
     confidence = float(preds[0][np.argmax(preds[0])])
     return predicted_class, confidence
