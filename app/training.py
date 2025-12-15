@@ -39,15 +39,19 @@ model = tf.keras.Sequential([
     layers.Dropout(0.2),
     layers.Dense(NUM_CLASSES, activation='softmax')
 ])
+
+def unfreeze_model(model):
+    for layer in model.layers[-20:]:
+        if not isinstance(layer, layers.BatchNormalization):
+            layer.trainable = True
+
 model.compile(optimizer='adam', loss='sparse_categorical_crossentropy', metrics=['accuracy'])
 
-history = model.fit(
-    ds_train,
-    validation_data = ds_test,
-    epochs=10
-)
+unfreeze_model(model)
+
+history = model.fit(ds_train, validation_data=ds_test, epochs=20, class_weight={0:2.0, 1:1.0})
 
 os.makedirs("model", exist_ok=True)
-model.save("model/pixelProbeB1.keras")
-with open("model/historyB1.json", "w") as f:
+model.save("model/pixelProbeB1_V3.keras")
+with open("model/historyB1_V3.json", "w") as f:
     json.dump(history.history, f)
