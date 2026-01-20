@@ -8,7 +8,7 @@ import json
 
 IMG_SIZE = 224
 BATCH_SIZE = 64
-DATA_DIR = "images"
+DATA_DIR = "CIFAKE"
 
 train_dir=f"{DATA_DIR}/train"
 test_dir=f"{DATA_DIR}/test"
@@ -52,6 +52,6 @@ unfreeze_model(model)
 history = model.fit(ds_train, validation_data=ds_test, epochs=20, class_weight={0:2.0, 1:1.0})
 
 os.makedirs("model", exist_ok=True)
-model.save("model/pixelProbeB1_V3.keras")
-with open("model/historyB1_V3.json", "w") as f:
+model.save("model/pixelProbeB1_CIFAKE.keras")
+with open("model/historyB1_CIFAKE.json", "w") as f:
     json.dump(history.history, f)
