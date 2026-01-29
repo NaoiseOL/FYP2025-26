@@ -1,10 +1,12 @@
+import os
+import json
+import keras
 import numpy as np
 import tensorflow as tf
-import keras
-import os
 from keras import layers
+from keras.layers import Resizing
 from keras.applications import EfficientNetV2B1
-import json
+from keras.applications.efficientnet_v2 import preprocess_input
 
 
 class LiteMHSA(layers.Layer):
@@ -51,7 +53,6 @@ class LiteMHSA(layers.Layer):
 
         return self.proj(out) 
 
-
 IMG_SIZE = 224
 BATCH_SIZE = 64
 DATA_DIR = "CIFAKE"
@@ -85,7 +86,11 @@ base_model = EfficientNetV2B1(
 base_model.trainable = False
 
 inputs = keras.Input(shape=(IMG_SIZE, IMG_SIZE, 3))
-x = base_model(inputs, training=False)
+
+x = Resizing(IMG_SIZE, IMG_SIZE)(inputs)
+x = preprocess_input(x)
+
+x = base_model(x, training=False)
 
 h, w, c = base_model.output_shape[1:]
 
@@ -121,7 +126,7 @@ if __name__ == "__main__":      #Ensure this is enclosed in wrapper or else code
     )
 
     os.makedirs("model", exist_ok=True)
-    model.save("model/pixelProbeB1_CIFAKE.keras")
+    model.save("model/pixelProbeB1_CIFAKE_V2.keras")
 
-    with open("model/historyB1_CIFAKE.json", "w") as f:
+    with open("model/historyB1_CIFAKE_V2.json", "w") as f:
         json.dump(history.history, f)

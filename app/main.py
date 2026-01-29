@@ -19,7 +19,7 @@ def classify_image(image_path):
     img = image.load_img(image_path, target_size=(224, 224))
     x = image.img_to_array(img)
     x = np.expand_dims(x, axis=0)
-    x = x / 255.0
+    
     preds = model.predict(x)
 
     print(f"Raw predictions: {preds}")
