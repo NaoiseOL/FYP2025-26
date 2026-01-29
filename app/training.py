@@ -77,6 +77,13 @@ ds_test = tf.keras.utils.image_dataset_from_directory(
 class_names = ds_train.class_names
 NUM_CLASSES = len(class_names)
 
+img_augmentation_layers = keras.Sequential([
+    layers.RandomRotation(0.15),
+    layers.RandomTranslation(0.1, 0.1),
+    layers.RandomFlip(),
+    layers.RandomContrast(0.1),
+], name="img_augmentation")
+
 
 base_model = EfficientNetV2B1(
     include_top=False,
@@ -88,6 +95,7 @@ base_model.trainable = False
 inputs = keras.Input(shape=(IMG_SIZE, IMG_SIZE, 3))
 
 x = Resizing(IMG_SIZE, IMG_SIZE)(inputs)
+x = img_augmentation_layers(x)              #Aims to increase accuracy on images outside dataset
 x = preprocess_input(x)
 
 x = base_model(x, training=False)
