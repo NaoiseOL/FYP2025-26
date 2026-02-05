@@ -14,6 +14,7 @@ class LiteMHSA(layers.Layer):
         super().__init__(**kwargs)
         self.dim = dim
         self.heads = heads
+        self.reduction = reduction
         self.inner = dim // reduction
 
         self.qkv = layers.Conv2D(self.inner * 3, 1, padding="same")
