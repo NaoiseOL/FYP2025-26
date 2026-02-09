@@ -2,43 +2,44 @@ import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+from tqdm import tqdm
 import os
 import json
+from app.training import LiteMHSA
 
-# --- Paths ---
 model_dir = "model"
-data_dir = "images"
+data_dir = "CIFAKE"
 plot_dir = "plots"
 
-model_path = os.path.join(model_dir, "pixelProbeB1_V3.keras")
-history_path = os.path.join(model_dir, "historyB1_V3.json")
+model_path = os.path.join(model_dir, "pixelProbeB1_CIFAKE_V2.keras")
+history_path = os.path.join(model_dir, "historyB1_CIFAKE_V2.json")
 test_dir = os.path.join(data_dir, "test")
 
-# Ensure plots directory exists
 os.makedirs(plot_dir, exist_ok=True)
 
-# --- Load model ---
-model = tf.keras.models.load_model(model_path)
+model = tf.keras.models.load_model(
+    model_path,
+    custom_objects={"LiteMHSA": LiteMHSA}
+)
 
 IMG_SIZE = 224
 BATCH_SIZE = 64
 
-# --- Load test dataset ---
 ds_test = tf.keras.utils.image_dataset_from_directory(
     test_dir,
     image_size=(IMG_SIZE, IMG_SIZE),
     batch_size=BATCH_SIZE,
-    label_mode="int"
+    label_mode="int",
+    shuffle=False
 )
 
-# Training Plots
 if os.path.exists(history_path):
+    print("Plotting training history...")
     with open(history_path, "r") as f:
         history_data = json.load(f)
 
     plt.figure(figsize=(12, 5))
 
-    # Loss plot
     plt.subplot(1, 2, 1)
     plt.plot(history_data['loss'], label='Train Loss')
     plt.plot(history_data['val_loss'], label='Val Loss')
@@ -47,7 +48,6 @@ if os.path.exists(history_path):
     plt.ylabel('Loss')
     plt.legend()
 
-    # Accuracy plot
     plt.subplot(1, 2, 2)
     plt.plot(history_data['accuracy'], label='Train Accuracy')
     plt.plot(history_data['val_accuracy'], label='Val Accuracy')
@@ -57,24 +57,31 @@ if os.path.exists(history_path):
     plt.legend()
 
     plt.tight_layout()
-    plt.savefig(os.path.join(plot_dir, "EfficientNetB1_V3_Plot.png"))
-    plt.show()
+    plt.savefig(os.path.join(plot_dir, "EfficientNetB1_CFV2_Plot.png"))
+    plt.close()
 else:
     print("Training history file not found. Skipping training plots.")
 
-#Confusion Matrix
-y_true = []
-y_pred = []
 
-for images, labels in ds_test.unbatch():
-    preds = model.predict(tf.expand_dims(images, axis=0), verbose=0)
-    y_true.append(labels.numpy())
-    y_pred.append(np.argmax(preds))
+print("Running predictions on test set...")
+
+y_true = np.concatenate([y.numpy() for _, y in ds_test], axis=0)
+y_pred = []
+for batch, _ in tqdm(ds_test, desc="Predicting", unit="batch"):
+    preds = model.predict(batch, verbose=0)
+    y_pred.extend(np.argmax(preds, axis=1))
+
+y_pred = np.array(y_pred)
+
+print("Building confusion matrix...")
 
 class_names = ds_test.class_names
 cm = confusion_matrix(y_true, y_pred)
+
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=class_names)
-disp.plot(cmap=plt.cm.Blues)
+disp.plot(cmap=plt.cm.Blues, xticks_rotation=45)
 plt.title("Confusion Matrix")
-plt.savefig(os.path.join(plot_dir, "EfficientNetB1_V3_ConfMatrix.png"))
-plt.show()
+plt.savefig(os.path.join(plot_dir, "EfficientNetB1_CFV2_ConfMatrix.png"))
+plt.close()
+
+print("All plots saved successfully.")

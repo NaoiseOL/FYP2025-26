@@ -4,18 +4,22 @@ from tensorflow.keras.preprocessing import image
 import numpy as np
 import os
 from flask_cors import CORS
+from app.training import LiteMHSA
 
 app = Flask(__name__)
 CORS(app)
 
-model = tf.keras.models.load_model("model/pixelProbeB1_V3.keras")
+model = tf.keras.models.load_model(
+    "model/pixelProbeB1_CIFAKE.keras",
+    custom_objects={"LiteMHSA":LiteMHSA}
+    )
 class_labels = ["real", "fake"]
 
 def classify_image(image_path):
     img = image.load_img(image_path, target_size=(224, 224))
     x = image.img_to_array(img)
     x = np.expand_dims(x, axis=0)
-    x = x / 255.0
+    
     preds = model.predict(x)
 
     print(f"Raw predictions: {preds}")
