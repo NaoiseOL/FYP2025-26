@@ -1,0 +1,26 @@
+.predict-btn {
+  background: #161616; /* matches homepage card tones */
+  color: #D0D4DA;
+  padding: 0.9rem 1.8rem;
+  border: 1px solid #2A2A2A;
+  border-radius: 10px;
+  font-size: 1.05rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s ease;
+  margin-top: 1.5rem;
+  letter-spacing: 0.3px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.35);
+}
+
+.predict-btn:hover {
+  background: #1E1E1E;
+  border-color: #3B82F6;
+  color: #E5E7EB;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.45);
+}
+
+.predict-btn:active {
+  transform: scale(0.97);
+  background: #141414;
+}

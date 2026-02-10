@@ -1,24 +1,34 @@
-import logo from './logo.svg';
 import './App.css';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import Navbar from "./components/Navbar";
+import ImageUpload from './components/fileUpload';
+import MyGallery from './components/imageGallery';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Router>
+      <Navbar />
+      <div className="mainpage">
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <div className="homepage">
+                <img 
+                  src="/PixelProbeLogo.png" 
+                  alt="PixelProbe Logo" 
+                  className="homepage-logo" 
+                />
+                <h1>Welcome to PixelProbe</h1>
+                <ImageUpload />
+              </div>
+            }
+          />
+
+          <Route path="/about" element={<MyGallery />} />
+        </Routes>
+      </div>
+    </Router>
   );
 }
 
