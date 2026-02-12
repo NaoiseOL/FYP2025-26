@@ -1,0 +1,13 @@
+.image-upload {
+    display: flex; 
+    flex-direction: column; 
+    gap: 1rem;
+    align-items: center;
+}
+
+.preview {
+    width: 224px; 
+    height: 224px; 
+    object-fit: cover;
+    border-radius: 4px;
+}
