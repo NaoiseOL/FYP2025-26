@@ -1,11 +1,12 @@
 import os
 import shutil
+from datetime import datetime
 from typing import Annotated
 from fastapi import FastAPI, File, UploadFile, HTTPException, status
 from .schemas import Prediction
 
 app = FastAPI()
-predictions = list[Prediction] = []
+predictions : list[Prediction] = []
 
 @app.get("/api/predictions")
 def get_predictions():
@@ -24,6 +25,18 @@ async def create_upload_file(file: UploadFile):
         file_path = f"BE/uploads/{file.filename}"
         with open(file_path, "wb") as f:
             f.write(file.file.read())
-            return {"message": "File saved successfully"}
+            #return {"message": "File saved successfully"}
+    
+        prediction = Prediction(
+        pred_id=1,
+        image_name=file.filename,
+        prediction="Pending",
+        datetime=datetime.now()
+        )
+
+        predictions.append(prediction)
+
+        return prediction
+
     except Exception as e:
         return {"message": e.args}
