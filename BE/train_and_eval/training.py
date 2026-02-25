@@ -56,7 +56,7 @@ class LiteMHSA(layers.Layer):
 
 IMG_SIZE = 224
 BATCH_SIZE = 64
-DATA_DIR = "CIFAKE"
+DATA_DIR = "BE/CIFAKE"
 
 train_dir = f"{DATA_DIR}/train"
 test_dir = f"{DATA_DIR}/test"

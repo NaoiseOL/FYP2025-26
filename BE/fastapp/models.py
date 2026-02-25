@@ -11,4 +11,5 @@ class PredDB(Base):
     pred_id: Mapped[int] = mapped_column(primary_key=True, index=True)
     image_name: Mapped[str] = mapped_column(String, nullable=False)
     prediction: Mapped[str] = mapped_column(String, nullable=False)
+    confidence: Mapped[str] = mapped_column(String, nullable=False)
     date_time: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, nullable=False) 
