@@ -20,7 +20,7 @@ Base.metadata.drop_all(engine)
 Base.metadata.create_all(bind=engine)
 
 model = tf.keras.models.load_model(
-    "BE/model/pixelProbeB1_CIFAKE.keras",
+    "BE/model/pixelProbeB1_CIFAKE_V2.keras",
     custom_objects={"LiteMHSA":LiteMHSA}
 )
 class_labels = ["real", "fake"]

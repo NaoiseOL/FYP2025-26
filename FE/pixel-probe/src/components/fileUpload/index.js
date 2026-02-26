@@ -1,13 +1,26 @@
 import React, { useState } from "react";
 import "./images.css";
 import PredictButton from "../predictButton";
+import { fetchPreds, createPred } from "../../api";
 
 function ImageUpload() {
     const [file, setFile] = useState(null);
+    const [preview, setPreview] = useState(null);
+    const [result, setResult] = useState(null);
 
     function handleChange(e) {
-        console.log(e.target.files);
-        setFile(URL.createObjectURL(e.target.files[0]));
+        const selected = e.target.files[0];
+        setFile(selected);
+        setPreview(URL.createObjectURL(selected));
+    }
+
+    async function handlePredict() {
+        try {
+            const prediction = await createPred(file);
+            setResult(prediction);
+        } catch (err) {
+            console.error("Prediction failed:", err);
+        }
     }
 
     return (
@@ -15,19 +28,26 @@ function ImageUpload() {
             <h2>Upload Image</h2>
             <input type="file" onChange={handleChange} />
 
-            {file && (
+            {preview && (
                 <>
                     <img 
-                        src={file} 
+                        src={preview} 
                         alt="Uploaded preview" 
                         className="preview" 
                     />
 
                     <PredictButton 
                         label="Predict Image"
-                        onClick={() => console.log("Predicting image...")}
+                        onClick={handlePredict}
                     />
                 </>
+            )}
+
+            {result && (
+                <div className="result">
+                    <p>Prediction: {result.prediction}</p>
+                    <p>Confidence: {result.confidence}</p>
+                </div>
             )}
         </div>
     );
