@@ -7,6 +7,7 @@ from typing import Annotated
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 from sqlalchemy.exc import IntegrityError
+from fastapi.middleware.cors import CORSMiddleware
 from tensorflow.keras.preprocessing import image
 from fastapi import FastAPI, File, UploadFile, HTTPException, status, Depends
 
@@ -16,7 +17,15 @@ from .schemas import PredCreate, PredRead
 from BE.train_and_eval.training import LiteMHSA
 
 app = FastAPI()
-Base.metadata.drop_all(engine)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 Base.metadata.create_all(bind=engine)
 
 model = tf.keras.models.load_model(
