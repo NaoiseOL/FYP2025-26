@@ -1,49 +1,90 @@
 import React from "react";
-import "keen-slider/keen-slider.min.css";
-import { useKeenSlider } from "keen-slider/react";
+import { useEffect, useState } from "react";
+import { fetchPreds } from "../../api";
 import "./imageGallery.css"
 
-export default function App() {
-  const [sliderRef] = useKeenSlider({
-    loop: true,
-    mode: "snap",
-    slides: {
-      perView: 1,
-      spacing: 15,
-    },
-    breakpoints: {
-      "(min-width: 640px)": {
-        slides: { perView: 1, spacing: 15 },
-      },
-      "(min-width: 1024px)": {
-        slides: { perView: 1, spacing: 20 },
-      },
-    },
-  });
 
+function MyGallery () {
+    const [data, setData] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const container = {
+      display: "flex",
+      flexDirection: "row",
+      flexWrap: "wrap",
+      margin: "4% auto",
+    };
 
-  return (
-    <div className="App">
-      <h2>Keen Slider React Example</h2>
-      <div ref={sliderRef} className="keen-slider">
-        <div className="keen-slider__slide number-slide1">
-          <div className="homepage-logo-wrapper">
-            <img 
-              src="/PixelProbeLogo.png" 
-              alt="PixelProbe Logo" 
-              className="homepage-logo" 
-              width={224}
-              height={224}
-            />
-            <div className="logo-text">PixelProbeLogo</div>
-          </div>
+    useEffect(() => {
+      async function loadData() {
+        try {
+          const result = await fetchPreds();
+          setData(result);
+        } catch (err){
+          console.error("Error fetching predictions: ", err);
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      loadData();
+    }, []);
+
+    return (
+        <div
+            style={{ textAlign: "center", margin: "auto" }}
+        >
+            <h1 style={{ color: "green" }}>
+                Predictions
+            </h1>
+            <h3>
+                Display values from database without
+                reloading...
+            </h3>
+            {loading ? (
+                <h4>Loading Data...</h4>
+            ) : (
+                <div style={container}>
+                    {data.map((item) => {
+                        return (
+                            <div
+                                key={item.pred_id}
+                                style={{
+                                    minWidth: "30rem",
+                                    margin: "1% auto",
+                                    padding: "1%",
+                                    boxShadow:
+                                        "0 2px 5px grey",
+                                    display: "flex",
+                                    fontSize: "larger",
+                                    margin: "1% auto",
+                                }}
+                            >
+                                <span
+                                    style={{
+                                        textAlign: "left",
+                                        margin: "auto",
+                                    }}
+
+                                    // style={style}
+                                >
+                                    <div>
+                                        <b>Name: </b>
+                                        {
+                                            item.image_name
+                                        }
+                                    </div>
+                                    <div>
+                                        <b>Prediction </b>{" "}
+                                        {item.prediction}
+                                    </div>
+                                </span>
+                            </div>
+                        );
+                    })}
+                </div>
+            )}
         </div>
-
-        <div className="keen-slider__slide number-slide2">Slide 2</div>
-        <div className="keen-slider__slide number-slide3">Slide 3</div>
-        <div className="keen-slider__slide number-slide4">Slide 4</div>
-        <div className="keen-slider__slide number-slide5">Slide 5</div>
-      </div>
-    </div>
-  );
+    );
 }
+
+export default MyGallery;
