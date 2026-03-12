@@ -25,7 +25,9 @@ function App() {
             }
           />
 
-          <Route path="/about" element={<MyGallery />} />
+          <Route path="/history" element={<MyGallery />} 
+          
+          />
         </Routes>
       </div>
     </Router>

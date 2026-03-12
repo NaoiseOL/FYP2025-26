@@ -7,7 +7,7 @@ export default function Navbar() {
       <img src="/PixelProbeLogo.png" alt="Logo" className="logo" />
       <ul className="navLinks">
         <li><Link to="/">Home</Link></li>
-        <li><Link to="/about">History</Link></li>
+        <li><Link to="/history">History</Link></li>
       </ul>
     </nav>
   );
