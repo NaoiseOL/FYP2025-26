@@ -1,5 +1,6 @@
 import os
 import shutil
+import boto3
 import numpy as np
 import tensorflow as tf
 from datetime import datetime
@@ -33,6 +34,20 @@ model = tf.keras.models.load_model(
     custom_objects={"LiteMHSA":LiteMHSA}
 )
 class_labels = ["real", "fake"]
+
+AWS_ACCESS_KEY = "AWS_ACCESS_KEY"
+AWS_SECRET_KEY = "AWS_SECRET_KEY"
+AWS_SESSION_TOKEN = "AWS_SESSION_TOKEN"
+AWS_REGION = "AWS_REGION"
+BUCKET_NAME = "BUCKET_NAME"
+
+s3 = boto3.client(
+    "s3",
+    aws_access_key_id=AWS_ACCESS_KEY,
+    aws_secret_access_key=AWS_SECRET_KEY,
+    aws_session_token=AWS_SESSION_TOKEN,
+    region_name=AWS_REGION
+)
 
 def classify_image(image_path):
     img = image.load_img(image_path, target_size=(224, 224))
@@ -76,6 +91,8 @@ async def create_upload_file(file: UploadFile, db: Session = Depends(get_db)):
             f.write(file.file.read())
             #return {"message": "File saved successfully"}
 
+        s3.upload_file(file_path, BUCKET_NAME, file.filename)
+
         pred_class, conf = classify_image(file_path)
     
         prediction = PredDB(
@@ -88,6 +105,8 @@ async def create_upload_file(file: UploadFile, db: Session = Depends(get_db)):
         db.add(prediction)
         db.commit()
         db.refresh(prediction)
+
+        os.remove(file_path)
 
     except IntegrityError:
         db.rollback()
