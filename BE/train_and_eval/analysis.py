@@ -5,14 +5,14 @@ from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
 from tqdm import tqdm
 import os
 import json
-from app.training import LiteMHSA
+from BE.train_and_eval.training import LiteMHSA
 
-model_dir = "model"
-data_dir = "CIFAKE"
-plot_dir = "plots"
+model_dir = "BE/model"
+data_dir = "BE/GenImage"
+plot_dir = "BE/plots"
 
-model_path = os.path.join(model_dir, "pixelProbeB1_CIFAKE_V2.keras")
-history_path = os.path.join(model_dir, "historyB1_CIFAKE_V2.json")
+model_path = os.path.join(model_dir, "best_model.keras")
+history_path = os.path.join(model_dir, "historyB2_GenImage_V3.json")
 test_dir = os.path.join(data_dir, "test")
 
 os.makedirs(plot_dir, exist_ok=True)
@@ -57,7 +57,7 @@ if os.path.exists(history_path):
     plt.legend()
 
     plt.tight_layout()
-    plt.savefig(os.path.join(plot_dir, "EfficientNetB1_CFV2_Plot.png"))
+    plt.savefig(os.path.join(plot_dir, "EfficientNetB2_GIV3_Plot.png"))
     plt.close()
 else:
     print("Training history file not found. Skipping training plots.")
@@ -81,7 +81,7 @@ cm = confusion_matrix(y_true, y_pred)
 disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=class_names)
 disp.plot(cmap=plt.cm.Blues, xticks_rotation=45)
 plt.title("Confusion Matrix")
-plt.savefig(os.path.join(plot_dir, "EfficientNetB1_CFV2_ConfMatrix.png"))
+plt.savefig(os.path.join(plot_dir, "EfficientNetB2_GIV3_ConfMatrix.png"))
 plt.close()
 
 print("All plots saved successfully.")

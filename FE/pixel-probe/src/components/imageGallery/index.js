@@ -56,7 +56,6 @@ function MyGallery () {
                                         "0 2px 5px grey",
                                     display: "flex",
                                     fontSize: "larger",
-                                    margin: "1% auto",
                                 }}
                             >
                                 <span

@@ -14,6 +14,7 @@ from fastapi import FastAPI, File, UploadFile, HTTPException, status, Depends
 from .database import engine, SessionLocal
 from .models import Base, PredDB
 from .schemas import PredCreate, PredRead
+from .users.user import user_router
 from BE.train_and_eval.training import LiteMHSA
 
 app = FastAPI()
@@ -26,10 +27,12 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+app.include_router(user_router, prefix="/user")
+
 Base.metadata.create_all(bind=engine)
 
 model = tf.keras.models.load_model(
-    "BE/model/pixelProbeB1_CIFAKE_V2.keras",
+    "BE/model/best_model.keras",
     custom_objects={"LiteMHSA":LiteMHSA}
 )
 class_labels = ["real", "fake"]

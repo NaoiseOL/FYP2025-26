@@ -1,5 +1,5 @@
 from sqlalchemy.orm import DeclarativeBase, Mapped, mapped_column
-from sqlalchemy import String, Integer, DateTime
+from sqlalchemy import String, Integer, DateTime, Boolean
 from datetime import datetime
 
 class Base(DeclarativeBase):
@@ -13,3 +13,11 @@ class PredDB(Base):
     prediction: Mapped[str] = mapped_column(String, nullable=False)
     confidence: Mapped[str] = mapped_column(String, nullable=False)
     date_time: Mapped[datetime] = mapped_column(DateTime, default=datetime.now, nullable=False) 
+
+class UserDB(Base):
+    __tablename__ = "users"
+
+    user_id : Mapped[int] = mapped_column(primary_key=True, index=True)
+    email : Mapped[str] = mapped_column(String, nullable=False)
+    hashed_password : Mapped[str] = mapped_column(String, nullable=False)
+    is_active : Mapped[bool] = mapped_column(Boolean, nullable=False)
