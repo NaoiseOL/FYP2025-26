@@ -7,7 +7,7 @@ from ..database import SessionLocal
 from ..models import UserDB
 from .security import SECRET_KEY, ALGORITHM
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="auth/login")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/auth/login")
 
 # DB session dependency
 def get_db():

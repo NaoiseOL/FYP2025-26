@@ -1,9 +1,9 @@
-import './App.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import ImageUpload from './components/fileUpload';
-import MyGallery from './components/imageGallery';
-import LoginPage from './components/userLogin';
+import ImageUpload from "./components/fileUpload";
+import MyGallery from "./components/imageGallery";
+import LoginPage from "./components/userLogin";
 
 function App() {
   return (
@@ -25,7 +25,7 @@ function App() {
               </div>
             }
           />
-
+          <Route path="/predictions" element={<ImageUpload />} />
           <Route path="/history" element={<MyGallery />} />
         </Routes>
       </div>

@@ -9,15 +9,8 @@ import {
   CssBaseline,
   ThemeProvider,
   createTheme,
-  Select,
-  MenuItem,
-  FormControl,
-  InputLabel,
 } from "@mui/material";
-import {
-  useSigninUserMutation,
-  useLoginUserMutation,
-} from "../../slices/loginSliceApi";
+import { registerUser, loginUser } from "../../api";
 import { useNavigate } from "react-router-dom";
 
 const darkTheme = createTheme({
@@ -40,50 +33,36 @@ const LoginPage = () => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [fullName, setFullName] = useState(""); // For sign-up only
-  const [userType, setUserType] = useState(""); // For user type selection
-  const [signinUser] = useSigninUserMutation();
-  const [loginUser] = useLoginUserMutation();
+  const [fullName, setFullName] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
 
   async function handleSubmit(e) {
     e.preventDefault();
-    if (isSignUp) {
-      console.log("Signing Up", { email, password, fullName, userType });
-      const isSignupuser = await signinUser({
-        name: fullName,
-        email,
-        password,
-        userType,
-      });
-      console.log("isSignupuser", isSignupuser);
-      if (isSignupuser?.data?.token) {
-        localStorage.setItem("authToken", isSignupuser?.data?.token);
-        localStorage.setItem("userType", userType); // Store user type in local storage
-        if (userType === "interviewer") {
-          navigate("/interviewer"); // Redirect to interviewer home page
-        } else {
-          navigate("/interviewee"); // Redirect to interviewee home page
+    setError("");
+
+    try {
+      if (isSignUp) {
+        const data = await registerUser(fullName, email, password);
+        if (data?.access_token) {
+          localStorage.setItem("token", data.access_token);
+          navigate("/predictions");
+        }
+      } else {
+        const data = await loginUser(email, password);
+        if (data?.access_token) {
+          localStorage.setItem("token", data.access_token);
+          navigate("/predictions");
         }
       }
-    } else {
-      console.log("Logging In", { email, password });
-      const isLoginuser = await loginUser({ email, password });
-      console.log("isLoginuser", isLoginuser);
-      if (isLoginuser?.data?.token) {
-        localStorage.setItem("authToken", isLoginuser?.data?.token);
-        localStorage.setItem("userType", isLoginuser?.data?.user_type); // Store user type in local storage
-        if (userType === "interviewer") {
-          navigate("/interviewer"); // Redirect to interviewer home page
-        } else {
-          navigate("/interviewee"); // Redirect to interviewee home page
-        }
-      }
+    } catch (err) {
+      setError(err.message);
     }
   }
 
   const toggleForm = () => {
     setIsSignUp(!isSignUp);
+    setError("");
   };
 
   return (
@@ -108,69 +87,45 @@ const LoginPage = () => {
         >
           {isSignUp ? "Sign Up" : "Login"}
         </Typography>
+
+        {error && (
+          <Typography color="error" align="center" sx={{ mb: 1 }}>
+            {error}
+          </Typography>
+        )}
+
         <Box component="form" noValidate autoComplete="off" sx={{ mt: 2 }}>
           {isSignUp && (
-            <>
-              <TextField
-                label="Full Name"
-                variant="outlined"
-                fullWidth
-                required
-                margin="normal"
-                value={fullName}
-                onChange={(e) => setFullName(e.target.value)}
-              />
-              <TextField
-                label="Email"
-                type="email"
-                variant="outlined"
-                fullWidth
-                required
-                margin="normal"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                error={
-                  email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-                }
-                helperText={
-                  email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-                    ? "Please enter a valid email address"
-                    : ""
-                }
-              />
-              <FormControl fullWidth margin="normal">
-                <InputLabel>User Type</InputLabel>
-                <Select
-                  value={userType}
-                  onChange={(e) => setUserType(e.target.value)}
-                  required
-                >
-                  <MenuItem value="interviewee">Interviewee</MenuItem>
-                  <MenuItem value="interviewer">Interviewer</MenuItem>
-                </Select>
-              </FormControl>
-            </>
-          )}
-          {!isSignUp && (
             <TextField
-              label="Email"
-              type="email"
+              label="Full Name"
               variant="outlined"
               fullWidth
               required
               margin="normal"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              error={
-                email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-              }
-              helperText={
-                email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
-                  ? "Please enter a valid email address"
-                  : ""
-              }
+              value={fullName}
+              onChange={(e) => setFullName(e.target.value)}
             />
           )}
+
+          <TextField
+            label="Email"
+            type="email"
+            variant="outlined"
+            fullWidth
+            required
+            margin="normal"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            error={
+              email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+            }
+            helperText={
+              email.length > 0 && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)
+                ? "Please enter a valid email address"
+                : ""
+            }
+          />
+
           <TextField
             label="Password"
             type="password"
@@ -187,6 +142,7 @@ const LoginPage = () => {
                 : ""
             }
           />
+
           <Button
             type="submit"
             variant="contained"
@@ -195,16 +151,14 @@ const LoginPage = () => {
             sx={{ mt: 2 }}
             onClick={(e) => {
               e.preventDefault();
-              if (password.length < 6) {
-                console.log("Password must be at least 6 characters");
-                return;
-              }
+              if (password.length < 6) return;
               handleSubmit(e);
             }}
           >
             {isSignUp ? "Sign Up" : "Login"}
           </Button>
         </Box>
+
         <Box textAlign="center" sx={{ mt: 2 }}>
           <Link
             component="button"

@@ -26,7 +26,7 @@ function ImageUpload() {
             console.log("Prediction response:", prediction);
             setResult(prediction);
         } catch (err) {
-            console.error("Prediction failed:", err);
+            console.error("Prediction failed:", err); 
             setError(err.message);
         } finally {
             setLoading(false);

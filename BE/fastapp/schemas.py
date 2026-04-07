@@ -20,10 +20,13 @@ class PredRead(BaseModel):
     prediction: PredStr
     confidence: ConfStr
     date_time: datetime
+    user_id : int
+    user_name : str
 
     model_config= ConfigDict(from_attributes=True)
 
 class UserCreate(BaseModel):
+    name: str
     email: EmailStr
     password: str
 
