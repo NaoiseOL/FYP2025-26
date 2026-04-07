@@ -5,7 +5,7 @@ import numpy as np
 import tensorflow as tf
 from keras import layers
 from keras.layers import Resizing
-from keras.applications import EfficientNetV2B1
+from keras.applications import EfficientNetV2B2
 from keras.applications.efficientnet_v2 import preprocess_input
 
 
@@ -52,11 +52,12 @@ class LiteMHSA(layers.Layer):
         out = tf.transpose(out, [0, 2, 1, 3])
         out = tf.reshape(out, [B, H, W, self.inner])
 
-        return self.proj(out) 
+        return self.proj(out)
+
 
 IMG_SIZE = 224
 BATCH_SIZE = 64
-DATA_DIR = "BE/CIFAKE"
+DATA_DIR = "BE/GenImage"
 
 train_dir = f"{DATA_DIR}/train"
 test_dir = f"{DATA_DIR}/test"
@@ -86,7 +87,7 @@ img_augmentation_layers = keras.Sequential([
 ], name="img_augmentation")
 
 
-base_model = EfficientNetV2B1(
+base_model = EfficientNetV2B2(
     include_top=False,
     weights='imagenet',
     input_shape=(IMG_SIZE, IMG_SIZE, 3)
@@ -117,25 +118,53 @@ def unfreeze_model(base_model, num_layers=20):
         if not isinstance(layer, layers.BatchNormalization):
             layer.trainable = True
 
-unfreeze_model(base_model, num_layers=20)
 
+if __name__ == "__main__":
 
-model.compile(
-    optimizer='adam',
-    loss='sparse_categorical_crossentropy',
-    metrics=['accuracy']
-)
+    my_callbacks = [
+        keras.callbacks.EarlyStopping(patience=3, restore_best_weights=True),
+        keras.callbacks.ModelCheckpoint(filepath="BE/model/best_model.keras",
+                                        save_best_only=True,
+                                        monitor="val_loss",
+                                        mode="min"),
+        keras.callbacks.TensorBoard(log_dir='BE/logs'),
+    ]
 
-
-if __name__ == "__main__":      #Ensure this is enclosed in wrapper or else code will run with import in analysis
-    history = model.fit(
-        ds_train,
-        validation_data=ds_test,
-        epochs=5
+    model.compile(
+        optimizer='adam',
+        loss='sparse_categorical_crossentropy',
+        metrics=['accuracy'],
     )
 
-    os.makedirs("model", exist_ok=True)
-    model.save("model/pixelProbeB1_CIFAKE_V2.keras")
+    history1 = model.fit(
+        ds_train,
+        validation_data=ds_test,
+        epochs=15,
+        callbacks=my_callbacks
+    )
 
-    with open("model/historyB1_CIFAKE_V2.json", "w") as f:
-        json.dump(history.history, f)
+    unfreeze_model(base_model, num_layers=20) #Must unfreeze layers after training the model head to ensure pretrained feature are protected and learning is stabilised
+
+    model.compile(
+        optimizer=keras.optimizers.Adam(1e-5),
+        loss='sparse_categorical_crossentropy',
+        metrics=['accuracy'],
+    )
+
+    history2 = model.fit(
+        ds_train,
+        validation_data=ds_test,
+        epochs=30,
+        callbacks=my_callbacks
+    )
+
+   
+    os.makedirs("model", exist_ok=True)
+    model.save("BE/model/pixelProbeB2_GenImage_V3.keras")
+
+    combined_history = {
+        k: history1.history[k] + history2.history[k]
+        for k in history1.history
+    }
+    with open("BE/model/historyB2_GenImage_V3.json", "w") as f:
+        json.dump(combined_history, f)

@@ -1,8 +1,9 @@
-import './App.css';
-import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import "./App.css";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
-import ImageUpload from './components/fileUpload';
-import MyGallery from './components/imageGallery';
+import ImageUpload from "./components/fileUpload";
+import MyGallery from "./components/imageGallery";
+import LoginPage from "./components/userLogin";
 
 function App() {
   return (
@@ -14,20 +15,18 @@ function App() {
             path="/"
             element={
               <div className="homepage">
-                <img 
-                  src="/PixelProbeLogo.png" 
-                  alt="PixelProbe Logo" 
-                  className="homepage-logo" 
+                <img
+                  src="/PixelProbeLogo.png"
+                  alt="PixelProbe Logo"
+                  className="homepage-logo"
                 />
                 <h1>Welcome to PixelProbe</h1>
-                <ImageUpload />
+                <LoginPage />
               </div>
             }
           />
-
-          <Route path="/history" element={<MyGallery />} 
-          
-          />
+          <Route path="/predictions" element={<ImageUpload />} />
+          <Route path="/history" element={<MyGallery />} />
         </Routes>
       </div>
     </Router>

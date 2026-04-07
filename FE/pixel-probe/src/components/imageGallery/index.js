@@ -34,7 +34,6 @@ function MyGallery() {
   return (
     <div style={{ textAlign: "center", margin: "auto" }}>
       <h1 style={{ color: "green" }}>Predictions</h1>
-      <h3>Display values from database without reloading...</h3>
 
       {loading ? (
         <h4>Loading Data...</h4>
@@ -75,6 +74,12 @@ function MyGallery() {
                   </div>
                   <div>
                     <b>Prediction: </b> {item.prediction}
+                  </div>
+                  <div>
+                    <b>Confidence: </b> {item.confidence}
+                  </div>
+                  <div>
+                    <b>Date: </b> {item.date_time}
                   </div>
                 </span>
               </div>
