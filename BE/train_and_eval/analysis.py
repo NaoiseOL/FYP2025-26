@@ -1,19 +1,19 @@
 import tensorflow as tf
 import numpy as np
 import matplotlib.pyplot as plt
-from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay
+from sklearn.metrics import confusion_matrix, ConfusionMatrixDisplay, accuracy_score
 from tqdm import tqdm
 import os
 import json
 from BE.train_and_eval.training import LiteMHSA
 
 model_dir = "BE/model"
-data_dir = "BE/GenImage"
+data_dir = "BE/testSet"
 plot_dir = "BE/plots"
 
 model_path = os.path.join(model_dir, "best_model.keras")
 history_path = os.path.join(model_dir, "historyB2_GenImage_V3.json")
-test_dir = os.path.join(data_dir, "test")
+test_dir = os.path.join(data_dir)
 
 os.makedirs(plot_dir, exist_ok=True)
 
@@ -57,7 +57,7 @@ if os.path.exists(history_path):
     plt.legend()
 
     plt.tight_layout()
-    plt.savefig(os.path.join(plot_dir, "EfficientNetB2_GIV3_Plot.png"))
+    plt.savefig(os.path.join(plot_dir, "EfficientNetB2_CF_Gen2_Plot.png"))
     plt.close()
 else:
     print("Training history file not found. Skipping training plots.")
@@ -73,15 +73,15 @@ for batch, _ in tqdm(ds_test, desc="Predicting", unit="batch"):
 
 y_pred = np.array(y_pred)
 
+test_accuracy = accuracy_score(y_true, y_pred)
+print("Test Accuracy:", test_accuracy)
+
+
 print("Building confusion matrix...")
 
 class_names = ds_test.class_names
-cm = confusion_matrix(y_true, y_pred)
-
-disp = ConfusionMatrixDisplay(confusion_matrix=cm, display_labels=class_names)
-disp.plot(cmap=plt.cm.Blues, xticks_rotation=45)
 plt.title("Confusion Matrix")
-plt.savefig(os.path.join(plot_dir, "EfficientNetB2_GIV3_ConfMatrix.png"))
+plt.savefig(os.path.join(plot_dir, "EfficientNetB2_CF_Gen2_ConfMatrix.png"))
 plt.close()
 
 print("All plots saved successfully.")

@@ -1,3 +1,5 @@
+# Command to run through AWS: python -m uvicorn fastapp.main:app --host 0.0.0.0 --port 8000
+
 import os
 import shutil
 import boto3
@@ -15,14 +17,15 @@ from fastapi import FastAPI, File, UploadFile, HTTPException, status, Depends
 from .database import engine, SessionLocal
 from .models import Base, PredDB, UserDB
 from .schemas import PredCreate, PredRead
-from .users.user import user_router, get_current_user
+from .users.user import user_router
+from .users.dependencies import get_db, get_current_user
 from BE.train_and_eval.training import LiteMHSA
 
 app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -68,14 +71,6 @@ def classify_image(image_path):
     predicted_class = class_labels[np.argmax(preds[0])]
     confidence = float(preds[0][np.argmax(preds[0])])
     return predicted_class, confidence
-
-
-def get_db():
-    db = SessionLocal()
-    try:
-        yield db
-    finally:
-        db.close()
 
 @app.get("/api/predictions", response_model=list[PredRead])
 def get_predictions(db: Session = Depends(get_db),current_user: UserDB = Depends(get_current_user)):
@@ -125,10 +120,4 @@ async def create_upload_file(file: UploadFile, db: Session = Depends(get_db), cu
     
     return prediction
 
-@app.get("/testgetCurrentUser")
-def test_user(current_user: UserDB = Depends(get_current_user)):
-    return {
-        "user_id": current_user.user_id,
-        "name": current_user.name,
-        "email": current_user.email
-    }
+
