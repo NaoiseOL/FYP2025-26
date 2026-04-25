@@ -1,8 +1,6 @@
-const API_URL = "http://localhost:8000";
+const API_URL = "http://100.49.9.230:8000";
 
-// ----------------------
-// FETCH PREDICTIONS (AUTH REQUIRED)
-// ----------------------
+
 export async function fetchPreds() {
   const token = localStorage.getItem("token");
 
@@ -19,9 +17,7 @@ export async function fetchPreds() {
   return response.json();
 }
 
-// ----------------------
-// CREATE PREDICTION (AUTH REQUIRED)
-// ----------------------
+
 export async function createPred(file) {
   const token = localStorage.getItem("token");
 
@@ -44,9 +40,7 @@ export async function createPred(file) {
   return response.json();
 }
 
-// ----------------------
-// REGISTER USER
-// ----------------------
+
 export async function registerUser(nameString, emailString, passwordString) {
   const response = await fetch(`${API_URL}/user/auth/register`, {
     method: "POST",
@@ -68,9 +62,7 @@ export async function registerUser(nameString, emailString, passwordString) {
   return response.json();
 }
 
-// ----------------------
-// LOGIN USER
-// ----------------------
+
 export async function loginUser(emailString, passwordString) {
   const response = await fetch(`${API_URL}/user/auth/login`, {
     method: "POST",

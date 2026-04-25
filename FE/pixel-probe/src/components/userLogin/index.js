@@ -12,20 +12,17 @@ import {
 } from "@mui/material";
 import { registerUser, loginUser } from "../../api";
 import { useNavigate } from "react-router-dom";
+import "./login.css";
 
 const darkTheme = createTheme({
   palette: {
     mode: "dark",
-    primary: {
-      main: "#90caf9",
-    },
+    primary: { main: "#90caf9" },
     background: {
       paper: "#121212",
       default: "#202020",
     },
-    text: {
-      primary: "#ffffff",
-    },
+    text: { primary: "#ffffff" },
   },
 });
 
@@ -60,31 +57,16 @@ const LoginPage = () => {
     }
   }
 
-  const toggleForm = () => {
-    setIsSignUp(!isSignUp);
-    setError("");
-  };
-
   return (
     <ThemeProvider theme={darkTheme}>
       <CssBaseline />
+
       <Container
         maxWidth="xs"
-        sx={{
-          mt: 8,
-          p: 4,
-          borderRadius: 2,
-          boxShadow: 3,
-          bgcolor: "background.paper",
-        }}
+        className="login-container"
+        sx={{ bgcolor: "background.paper" }}
       >
-        <Typography
-          variant="h4"
-          component="h1"
-          gutterBottom
-          align="center"
-          color="text.primary"
-        >
+        <Typography variant="h4" align="center" gutterBottom>
           {isSignUp ? "Sign Up" : "Login"}
         </Typography>
 
@@ -94,11 +76,15 @@ const LoginPage = () => {
           </Typography>
         )}
 
-        <Box component="form" noValidate autoComplete="off" sx={{ mt: 2 }}>
+        <Box
+          component="form"
+          noValidate
+          autoComplete="off"
+          className="login-form"
+        >
           {isSignUp && (
             <TextField
               label="Full Name"
-              variant="outlined"
               fullWidth
               required
               margin="normal"
@@ -110,7 +96,6 @@ const LoginPage = () => {
           <TextField
             label="Email"
             type="email"
-            variant="outlined"
             fullWidth
             required
             margin="normal"
@@ -129,7 +114,6 @@ const LoginPage = () => {
           <TextField
             label="Password"
             type="password"
-            variant="outlined"
             fullWidth
             required
             margin="normal"
@@ -146,9 +130,8 @@ const LoginPage = () => {
           <Button
             type="submit"
             variant="contained"
-            color="primary"
             fullWidth
-            sx={{ mt: 2 }}
+            className="login-button"
             onClick={(e) => {
               e.preventDefault();
               if (password.length < 6) return;
@@ -159,12 +142,15 @@ const LoginPage = () => {
           </Button>
         </Box>
 
-        <Box textAlign="center" sx={{ mt: 2 }}>
+        <Box textAlign="center">
           <Link
             component="button"
             variant="body2"
-            onClick={toggleForm}
-            sx={{ textDecoration: "underline" }}
+            className="login-toggle"
+            onClick={() => {
+              setIsSignUp(!isSignUp);
+              setError("");
+            }}
           >
             {isSignUp
               ? "Already have an account? Login"

@@ -1,0 +1,20 @@
+.login-container {
+  margin-top: 64px;
+  padding: 32px;          
+  border-radius: 8px;     
+  box-shadow: 0px 3px 10px rgba(0,0,0,0.4);
+}
+
+.login-form {
+  margin-top: 16px;
+}
+
+.login-button {
+  margin-top: 16px;
+}
+
+.login-toggle {
+  text-decoration: underline;
+  cursor: pointer;
+  margin-top: 16px;
+}
