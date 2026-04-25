@@ -25,3 +25,5 @@ class UserDB(Base):
     email : Mapped[str] = mapped_column(String, nullable=False)
     hashed_password : Mapped[str] = mapped_column(String, nullable=False)
     is_active : Mapped[bool] = mapped_column(Boolean, nullable=False)
+
+    

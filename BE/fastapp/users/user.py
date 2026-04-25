@@ -16,25 +16,6 @@ from .security import (
 user_router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-def get_current_user(
-    token: str = Depends(oauth2_scheme),
-    db: Session = Depends(get_db)
-):
-    try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
-        user_id: str = payload.get("sub")
-        if user_id is None:
-            raise HTTPException(status_code=401, detail="Invalid token")
-    except JWTError:
-        raise HTTPException(status_code=401, detail="Invalid token")
-
-    user = db.query(UserDB).filter(UserDB.user_id == int(user_id)).first()
-    if not user:
-        raise HTTPException(status_code=404, detail="User not found")
-
-    return user
-
-
 @user_router.post("/register", response_model=Token)
 def register(user: UserCreate, db: Session = Depends(get_db)):
     existing_user = db.query(UserDB).filter(UserDB.email == user.email).first()
@@ -67,3 +48,5 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     token = create_access_token(db_user.user_id)
 
     return {"access_token": token, "token_type": "bearer"}
+
+

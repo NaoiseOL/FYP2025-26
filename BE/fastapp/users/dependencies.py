@@ -9,7 +9,7 @@ from .security import SECRET_KEY, ALGORITHM
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/user/auth/login")
 
-# DB session dependency
+
 def get_db():
     db = SessionLocal()
     try:
@@ -40,3 +40,4 @@ def get_current_user(
         raise credentials_exception
 
     return user
+
